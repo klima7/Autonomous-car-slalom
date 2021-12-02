@@ -2,6 +2,7 @@
 #include <NewPing.h>
 #include <Axle.hpp>
 #include <Encoder.h>
+#include <limits.h>
 
 #include "variables.h"
 #include "functions.hpp"
@@ -27,13 +28,18 @@ float pitchRequested = 0;
 
 float yawErrorAccumulated = 0;
 float pitchErrorAccumulated = 0;
+
+
 //============
 
+int rSpeed = 50;
+int lSpeed = 50;
 
 //==============SENSORS VARIABLES==============
 #define SONAR_NUM      3
-#define MAX_DISTANCE 200
+#define MAX_DISTANCE 400
 #define PING_INTERVAL 30
+#define MIN_DISTANCE 50
 
 unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
 unsigned int distances[SONAR_NUM];         // Where the ping distances are stored.
@@ -62,20 +68,34 @@ void initSensors() {
     pingTimer[i] = pingTimer[i - 1] + PING_INTERVAL;
 }
 
+unsigned int getShortestDistance(){
+    unsigned int min = UINT_MAX;
+    for (uint8_t i = 1; i < SONAR_NUM; i++) {
+        if(isObstacle[i] && distances[i] < min)
+            min = distances[i];
+    }
+    if(min == UINT_MAX)
+        return 0;
+    return min;
+}
+
 void processPingResult(uint8_t sensor, int distanceInCm) {
   // The following code would be replaced with your code that does something with the ping result.
-  if(distanceInCm < 30 && distanceInCm != 0)
+  if(distanceInCm < MIN_DISTANCE && distanceInCm != 0)
   {
      isObstacle[sensor] = true;
      distances[sensor] = distanceInCm;
-     Serial.println("Obstacle detected, stop motors!!!");
-     Serial.println("Sensor: " + String(sensor) + "; Distance: " + String(distanceInCm));
+    //  Serial.println("Obstacle detected, stop motors!!!");
+    //  Serial.println("Sensor: " + String(sensor) + "; Distance: " + String(distanceInCm));
   }
   else
   {
      isObstacle[sensor] = false;
   }
-  
+  unsigned int shortestDistance = getShortestDistance();
+  //Serial.println("Shortest distance: " + String(shortestDistance));
+  String packet = "<"+String(shortestDistance)+">";
+  Serial.write(packet.c_str());
 }
 
 void echoCheck() {
@@ -240,15 +260,21 @@ void loop() {
 
         }
 
-        if (strcmp(packet.message, "stop") == 0)
-        {
-            isStopped = true;
+        if(strcmp(packet.message, "start")==0){
+            MotorR_Move(rSpeed);
+            MotorL_Move(lSpeed);
         }
 
-        if (strcmp(packet.message, "start") == 0)
-        {
-            isStopped = false;
+        if(strcmp(packet.message, "stop")==0){
+            Brake();
         }
+
+        if(strcmp(packet.message, "turn_right")==0){
+            MotorR_Move(-80);
+            MotorL_Move(80);
+        }
+
+
 
         newData = false;
     }
