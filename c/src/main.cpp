@@ -3,15 +3,9 @@
 #include <Axle.hpp>
 #include <Encoder.h>
 
-/*
-This code is based on the examples at http://forum.arduino.cc/index.php?topic=396450
-*/
-
-
-// Example 5 - parsing text and numbers with start and end markers in the stream
-
 #include "variables.h"
 #include "functions.hpp"
+#include "ISAMobile.h"
 
 
 float YawCalibrationCenter = 80.0f;
@@ -35,7 +29,71 @@ float yawErrorAccumulated = 0;
 float pitchErrorAccumulated = 0;
 //============
 
-//============
+
+//==============SENSORS VARIABLES==============
+#define SONAR_NUM      3
+#define MAX_DISTANCE 200
+#define PING_INTERVAL 30
+
+unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
+unsigned int distances[SONAR_NUM];         // Where the ping distances are stored.
+uint8_t currentSensor = 0;          // Keeps track of which sensor is active.
+bool isObstacle[SONAR_NUM] = {false};
+
+NewPing sonar[SONAR_NUM] = {   // Sensor object array.
+  NewPing(ultrasound_trigger_pin[(int)UltraSoundSensor::Left], 
+                     ultrasound_echo_pin[(int)UltraSoundSensor::Left], 
+                     MAX_DISTANCE), // Each sensor's trigger pin, echo pin, and max distance to ping.
+  NewPing(ultrasound_trigger_pin[(int)UltraSoundSensor::Front], 
+                     ultrasound_echo_pin[(int)UltraSoundSensor::Front], 
+                     MAX_DISTANCE),
+  NewPing(ultrasound_trigger_pin[(int)UltraSoundSensor::Right], 
+                     ultrasound_echo_pin[(int)UltraSoundSensor::Right], 
+                     MAX_DISTANCE)
+};
+//===============================================
+
+
+//==============SENSORS FUNCTIONS==============
+void initSensors() {
+    pingTimer[0] = millis() + 75;
+ 
+  for (uint8_t i = 1; i < SONAR_NUM; i++)
+    pingTimer[i] = pingTimer[i - 1] + PING_INTERVAL;
+}
+
+void processPingResult(uint8_t sensor, int distanceInCm) {
+  // The following code would be replaced with your code that does something with the ping result.
+  if(distanceInCm < 30 && distanceInCm != 0)
+  {
+     isObstacle[sensor] = true;
+     distances[sensor] = distanceInCm;
+     Serial.println("Obstacle detected, stop motors!!!");
+     Serial.println("Sensor: " + String(sensor) + "; Distance: " + String(distanceInCm));
+  }
+  else
+  {
+     isObstacle[sensor] = false;
+  }
+  
+}
+
+void echoCheck() {
+  if (sonar[currentSensor].check_timer())
+    processPingResult(currentSensor, sonar[currentSensor].ping_result / US_ROUNDTRIP_CM);
+}
+
+void updateSensors() {
+    for (uint8_t i = 0; i < SONAR_NUM; i++) {
+    if (millis() >= pingTimer[i]) {
+      pingTimer[i] += PING_INTERVAL * SONAR_NUM;
+      sonar[currentSensor].timer_stop();
+      currentSensor = i;
+      sonar[currentSensor].ping_timer(echoCheck);
+    }
+  }
+}
+//===============================================
 
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
@@ -116,6 +174,7 @@ void setup() {
 
     initServos();
     centerServos();
+    initSensors();
 
     // initESP826();
     // initLED();
@@ -132,6 +191,8 @@ void setup() {
 
 void loop() {
       
+    updateSensors();
+
     // parse input data
     recvWithStartEndMarkers();
 
