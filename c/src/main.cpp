@@ -1,4 +1,8 @@
 #include <Arduino.h>
+#include <NewPing.h>
+#include <Axle.hpp>
+#include <Encoder.h>
+
 /*
 This code is based on the examples at http://forum.arduino.cc/index.php?topic=396450
 */
