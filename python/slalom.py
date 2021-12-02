@@ -20,6 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
+# sudo systemctl restart nvargus-daemon
 import cv2 
 import numpy as np
 from imutils.video import JetsonVideoStream
@@ -45,7 +46,7 @@ runHeadless = False
 net = jetson.inference.detectNet(argv=['--model={}'.format(modelPath),
                                        '--labels={}'.format(labelsPath),
                                        '--input-blob=input_0', '--output-cvg=scores', '--output-bbox=boxes'], #, '--input-flip=rotate-180'],
-                                       threshold=0.5)
+                                       threshold=0.3)
 
 
 # process frames until the user exits
