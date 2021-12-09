@@ -68,15 +68,11 @@ void initSensors() {
     pingTimer[i] = pingTimer[i - 1] + PING_INTERVAL;
 }
 
-unsigned int getShortestDistance(){
-    unsigned int min = UINT_MAX;
-    for (uint8_t i = 1; i < SONAR_NUM; i++) {
-        if(isObstacle[i] && distances[i] < min)
-            min = distances[i];
-    }
-    if(min == UINT_MAX)
-        return 0;
-    return min;
+unsigned int getDistance(int index) {
+    if(isObstacle[index]) {
+        return distances[index];
+    } 
+    return 0;
 }
 
 void processPingResult(uint8_t sensor, int distanceInCm) {
@@ -92,9 +88,7 @@ void processPingResult(uint8_t sensor, int distanceInCm) {
   {
      isObstacle[sensor] = false;
   }
-  unsigned int shortestDistance = getShortestDistance();
-  //Serial.println("Shortest distance: " + String(shortestDistance));
-  String packet = "<"+String(shortestDistance)+">";
+  String packet = "<"+String(getDistance(0))+","+String(getDistance(1))+","+String(getDistance(2))+">";
   Serial.write(packet.c_str());
 }
 
@@ -270,9 +264,16 @@ void loop() {
         }
 
         if(strcmp(packet.message, "turn_right")==0){
-            MotorR_Move(-80);
-            MotorL_Move(80);
+            MotorR_Move(-100);
+            MotorL_Move(100);
         }
+
+        if(strcmp(packet.message, "turn_left")==0){
+            MotorR_Move(100);
+            MotorL_Move(-100);
+        }
+
+
 
 
 
