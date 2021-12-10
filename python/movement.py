@@ -10,6 +10,7 @@ class Action(Enum):
 
 stopped = False
 startStopped = False
+lastDirection = Action.TURN_LEFT
 
 def movement():
     global stopped
@@ -45,6 +46,13 @@ def movement():
 
 
 def get_action():
+    global lastDirection
+    action = get_action_temp()
+    if action == Action.TURN_LEFT or action == Action.TURN_RIGHT:
+        lastDirection = action
+    return action
+
+def get_action_temp():
     distances = get_distances()
 
     left = distances[0]
@@ -65,7 +73,8 @@ def get_action():
             elif left == 0:
                 return Action.TURN_LEFT
         else:
-            return Action.TURN_RIGHT # or left
+            print('Moving in same direction')
+            return lastDirection
     elif right != 0:
         return Action.TURN_LEFT
     elif left != 0:

@@ -39,7 +39,7 @@ int lSpeed = 50;
 #define SONAR_NUM      3
 #define MAX_DISTANCE 400
 #define PING_INTERVAL 30
-#define MIN_DISTANCE 50
+#define MIN_DISTANCE 90
 
 unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
 unsigned int distances[SONAR_NUM];         // Where the ping distances are stored.
@@ -79,6 +79,8 @@ void processPingResult(uint8_t sensor, int distanceInCm) {
   // The following code would be replaced with your code that does something with the ping result.
   if(distanceInCm < MIN_DISTANCE && distanceInCm != 0)
   {
+    if(sensor == 1 && distanceInCm > MIN_DISTANCE-40)
+        return;
      isObstacle[sensor] = true;
      distances[sensor] = distanceInCm;
     //  Serial.println("Obstacle detected, stop motors!!!");
