@@ -79,7 +79,6 @@ th = threading.Thread(target = recieve_data)
 th.start()
 while True:
     action = get_action()
-    print(action)
 
     if action == Action.GO_FORWARD:
         if not startStopped:
