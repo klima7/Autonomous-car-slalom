@@ -8,40 +8,39 @@ class Action(Enum):
     GO_FORWARD = "go_forward"
     STOP = "stop"
 
-stopped = False
-startStopped = False
 lastDirection = Action.TURN_LEFT
 
 def move(position):
-    global stopped
-    global startStopped
+    global lastDirection
     action = get_action(position)
+
+    # Forward
     if action == Action.GO_FORWARD:
-        if not startStopped:
+        if lastDirection == Action.TURN_LEFT or lastDirection == Action.TURN_RIGHT:
             stop()
-            time.sleep(0.4)
-            start()
-            stopped = False
-            startStopped = True
+            time.sleep(0.2)
+        start()
+
+    # Stop
     elif action == Action.STOP:
         stop()
-        stopped = True
-        startStopped = True
-    elif action == Action.TURN_LEFT:
-        if not stopped:
-            stop()
-            time.sleep(0.2)
-            turn_left()
-            stopped = True
-            startStopped = False
-    elif action == Action.TURN_RIGHT:
-        if not stopped:
-            stop()
-            time.sleep(0.2)
-            turn_right()
-            stopped = True
-            startStopped = False
 
+    # Left
+    elif action == Action.TURN_LEFT:
+        if lastDirection == Action.TURN_RIGHT or lastDirection == Action.GO_FORWARD:
+            stop()
+            time.sleep(0.2)
+        turn_left()
+
+    # Right
+    elif action == Action.TURN_RIGHT:
+        if lastDirection == Action.TURN_LEFT or lastDirection == Action.GO_FORWARD:
+            stop()
+            time.sleep(0.2)
+        turn_right()
+
+    # Update last
+    lastDirection = action
 
 def get_action(position):
     if position:
@@ -53,19 +52,19 @@ def get_action(position):
 
 
 def get_detected_action(position):
-    if position < 0:
+    if position < -25:
         return Action.TURN_LEFT
-    elif position > 0:
+    elif position > 25:
         return Action.TURN_RIGHT
-    elif position == 0:
+    elif -25 < position < 25:
         return Action.GO_FORWARD
 
 
 def get_not_detected_action():
     global lastDirection
     action = get_not_detected_action_temp()
-    if action == Action.TURN_LEFT or action == Action.TURN_RIGHT:
-        lastDirection = action
+    # if action == Action.TURN_LEFT or action == Action.TURN_RIGHT:
+    #     lastDirection = action
     return action
 
 def get_not_detected_action_temp():
