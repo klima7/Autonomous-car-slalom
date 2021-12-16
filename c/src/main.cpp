@@ -9,7 +9,7 @@
 #include "ISAMobile.h"
 
 
-float YawCalibrationCenter = 80.0f;
+float YawCalibrationCenter = 90.0f;
 float PitchCalibrationCenter = 58.0f;
 
 const byte numChars = 64;
