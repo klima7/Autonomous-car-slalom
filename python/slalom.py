@@ -5,7 +5,7 @@ import jetson.inference
 import jetson.utils
 import time
 from control import init_movement
-import movement
+from movement import Movement
 import vision
 
 
@@ -13,6 +13,7 @@ def main():
     vision.init()
     init_movement()
     time.sleep(2.0)
+    movement = Movement()
 
     while True:
         position = vision.image_processing()
