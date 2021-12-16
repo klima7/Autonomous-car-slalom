@@ -25,6 +25,11 @@ def turn_left():
     packetBytes = bytes(packet, 'utf-8')
     ser.write(packetBytes)
 
+def go_back():
+    packet = '<go_back, 0, 0>'
+    packetBytes = bytes(packet, 'utf-8')
+    ser.write(packetBytes)
+
 def get_distances():
     return distances
 

@@ -37,9 +37,9 @@ int lSpeed = 50;
 
 //==============SENSORS VARIABLES==============
 #define SONAR_NUM      3
-#define MAX_DISTANCE 400
+#define MAX_DISTANCE 200
 #define PING_INTERVAL 30
-#define MIN_DISTANCE 400
+#define MIN_DISTANCE 200
 
 unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
 unsigned int distances[SONAR_NUM];         // Where the ping distances are stored.
@@ -266,13 +266,18 @@ void loop() {
         }
 
         if(strcmp(packet.message, "turn_right")==0){
-            MotorR_Move(-100);
-            MotorL_Move(100);
+            MotorR_Move(-75);
+            MotorL_Move(75);
         }
 
         if(strcmp(packet.message, "turn_left")==0){
-            MotorR_Move(100);
-            MotorL_Move(-100);
+            MotorR_Move(75);
+            MotorL_Move(-75);
+        }
+
+        if(strcmp(packet.message, "go_back")==0){
+            MotorR_Move(-rSpeed);
+            MotorL_Move(-lSpeed);
         }
 
 
