@@ -39,7 +39,7 @@ int lSpeed = 50;
 #define SONAR_NUM      3
 #define MAX_DISTANCE 400
 #define PING_INTERVAL 30
-#define MIN_DISTANCE 90
+#define MIN_DISTANCE 400
 
 unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
 unsigned int distances[SONAR_NUM];         // Where the ping distances are stored.

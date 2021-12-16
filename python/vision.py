@@ -18,7 +18,6 @@ net = jetson.inference.detectNet(argv=['--model={}'.format(modelPath),
                                        '--input-blob=input_0', '--output-cvg=scores', '--output-bbox=boxes'],  # , '--input-flip=rotate-180'],
                                  threshold=0.3)
 
-
 def init():
     vs.start()
 
@@ -50,20 +49,21 @@ def image_processing():
 
     detectionsWithHeight = ((detection, detection.Top-detection.Bottom) for detection in detections)
     sortedDetections = sorted(detectionsWithHeight, key=lambda x: x[1])
+    position = None
     if sortedDetections:
         d = sortedDetections[0][0]
         labelX = int((d.Left+d.Right)/2)
         labelY = int((d.Bottom+d.Top)/2)-20
-        position = (frameResolution[0] / 2) - labelX
+        position = labelX - (frameResolution[0] / 2)
         cv2.putText(frame, f'Nearest ({position})', (labelX, labelY),
             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-
-        # print(dir(detection))
 
     net.PrintProfilerTimes()
 
     if runHeadless is False:
         cv2.imshow("video", frame)
+
+    return position
 
 
 def dispose():

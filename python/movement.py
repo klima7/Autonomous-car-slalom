@@ -12,11 +12,10 @@ stopped = False
 startStopped = False
 lastDirection = Action.TURN_LEFT
 
-def movement():
+def move(position):
     global stopped
     global startStopped
-    action = get_action()
-    print('action: ' + str(action))
+    action = get_action(position)
     if action == Action.GO_FORWARD:
         if not startStopped:
             stop()
@@ -44,15 +43,32 @@ def movement():
             startStopped = False
 
 
+def get_action(position):
+    if position:
+        return get_detected_action(position)
+    else:
+        return Action.STOP
+    # else:
+    #     return get_not_detected_action()
 
-def get_action():
+
+def get_detected_action(position):
+    if position < 0:
+        return Action.TURN_LEFT
+    elif position > 0:
+        return Action.TURN_RIGHT
+    elif position == 0:
+        return Action.GO_FORWARD
+
+
+def get_not_detected_action():
     global lastDirection
-    action = get_action_temp()
+    action = get_not_detected_action_temp()
     if action == Action.TURN_LEFT or action == Action.TURN_RIGHT:
         lastDirection = action
     return action
 
-def get_action_temp():
+def get_not_detected_action_temp():
     distances = get_distances()
 
     left = distances[0]

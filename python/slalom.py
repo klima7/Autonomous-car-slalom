@@ -5,7 +5,7 @@ import jetson.inference
 import jetson.utils
 import time
 from control import init_movement
-from movement import movement
+import movement
 import vision
 
 
@@ -15,8 +15,8 @@ def main():
     time.sleep(2.0)
 
     while True:
-        vision.image_processing()
-        movement()
+        position = vision.image_processing()
+        movement.move(position)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
