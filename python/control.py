@@ -30,6 +30,16 @@ def go_back():
     packetBytes = bytes(packet, 'utf-8')
     ser.write(packetBytes)
 
+def pass_left():
+    packet = '<pass_left, 0, 0>'
+    packetBytes = bytes(packet, 'utf-8')
+    ser.write(packetBytes)
+
+def pass_right():
+    packet = '<pass_right, 0, 0>'
+    packetBytes = bytes(packet, 'utf-8')
+    ser.write(packetBytes)
+
 def get_distances():
     return distances
 

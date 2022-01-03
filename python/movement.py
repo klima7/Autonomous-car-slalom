@@ -8,6 +8,8 @@ class Action(Enum):
     GO_FORWARD = "go_forward"
     GO_BACK = "go_back"
     STOP = "stop"
+    PASS_LEFT ="pass_left"
+    PASS_RIGHT="pass_right"
 
 
 class Movement:
@@ -52,6 +54,23 @@ class Movement:
                 stop()
                 time.sleep(0.2)
             go_back()
+
+        elif action == Action.PASS_LEFT:
+            stop()
+            time.sleep(0.2)
+            turn_left()
+            time.sleep(2)
+            pass_left()
+            time.sleep(4)
+
+        elif action == Action.PASS_RIGHT:
+            stop()
+            time.sleep(0.2)
+            turn_right()
+            time.sleep(2)
+            pass_right()
+            time.sleep(4)
+
         # Update last
         self.lastDirection = action
 
@@ -73,7 +92,7 @@ class Movement:
             if distance > 80:
                 return self.lastDirection 
             if self.AVOID_DISTANCE_DETECTED_MIN < distance < self.AVOID_DISTANCE_DETECTED_MAX and distance != 0:
-                return Action.STOP
+                return Action.PASS_RIGHT
             elif distance < self.AVOID_DISTANCE_DETECTED_MIN:
                 return Action.GO_BACK
             return Action.GO_FORWARD
