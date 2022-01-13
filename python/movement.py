@@ -20,8 +20,8 @@ class Movement:
     AVOID_DISTANCE_DETECTED_MIN = 30
     SIDE_SENSORS_DISTANCE_BIAS = 30
 
-    def move(self, position):
-        action = self._get_action(position)
+    def move(self, position, classID):
+        action = self._get_action(position, classID)
 
         # Forward
         if action == Action.GO_FORWARD:
@@ -55,33 +55,25 @@ class Movement:
                 time.sleep(0.2)
             go_back()
 
-        elif action == Action.PASS_LEFT:
-            stop()
-            time.sleep(0.2)
-            turn_left()
-            time.sleep(2)
-            pass_left()
-            time.sleep(4)
-
+        # Pass right
         elif action == Action.PASS_RIGHT:
-            stop()
-            time.sleep(0.2)
-            turn_right()
-            time.sleep(2)
-            pass_right()
-            time.sleep(4)
+            self.pass_right()
+
+        # Pass left
+        elif action == Action.PASS_LEFT:
+            self.pass_left()
 
         # Update last
         self.lastDirection = action
 
-    def _get_action(self, position):
+    def _get_action(self, position, classID):
         if position:
-            return self._get_detected_action(position)
+            return self._get_detected_action(position, classID)
         else:
             return self._get_not_detected_action()
 
 
-    def _get_detected_action(self, position):
+    def _get_detected_action(self, position, classID):
         if position < -25:
             return Action.TURN_LEFT
         elif position > 25:
@@ -92,7 +84,10 @@ class Movement:
             if distance > 80:
                 return self.lastDirection 
             if self.AVOID_DISTANCE_DETECTED_MIN < distance < self.AVOID_DISTANCE_DETECTED_MAX and distance != 0:
-                return Action.PASS_RIGHT
+                if classID == 1:
+                    return Action.PASS_LEFT
+                else:
+                    return Action.PASS_RIGHT
             elif distance < self.AVOID_DISTANCE_DETECTED_MIN:
                 return Action.GO_BACK
             return Action.GO_FORWARD
@@ -125,3 +120,69 @@ class Movement:
             return Action.TURN_RIGHT
         else:
             return Action.GO_FORWARD
+
+    def pass_right(self):
+        forward_time = 2.75
+        second_forward_time = 3
+        turn_time = 1.5
+        second_turn_time = 3
+        stop_time = 0.2
+
+        stop()
+        time.sleep(stop_time)
+
+        turn_right()
+        time.sleep(turn_time)
+
+        start()
+        time.sleep(forward_time)
+
+        stop()
+        time.sleep(stop_time)
+
+        turn_left()
+        time.sleep(second_turn_time)
+
+        start()
+        time.sleep(second_forward_time)
+
+        stop()
+        time.sleep(stop_time)
+
+        turn_right()
+        time.sleep(turn_time)
+
+        stop()
+
+    def pass_left(self):
+        forward_time = 2.75
+        second_forward_time = 3
+        turn_time = 1.5
+        second_turn_time = 3
+        stop_time = 0.2
+
+        stop()
+        time.sleep(stop_time)
+
+        turn_left()
+        time.sleep(turn_time)
+
+        start()
+        time.sleep(forward_time)
+
+        stop()
+        time.sleep(stop_time)
+
+        turn_right()
+        time.sleep(second_turn_time)
+
+        start()
+        time.sleep(second_forward_time)
+
+        stop()
+        time.sleep(stop_time)
+
+        turn_left()
+        time.sleep(turn_time)
+
+        stop()

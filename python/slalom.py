@@ -16,8 +16,8 @@ def main():
     movement = Movement()
 
     while True:
-        position = vision.image_processing()
-        movement.move(position)
+        position, classID = vision.image_processing()
+        movement.move(position, classID)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):

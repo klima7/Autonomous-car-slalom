@@ -33,7 +33,7 @@ float pitchErrorAccumulated = 0;
 //============
 
 int speed = 50;
-float turn_factor = 2;
+float turn_speed = 75;
 
 //==============SENSORS VARIABLES==============
 #define SONAR_NUM      3
@@ -266,33 +266,19 @@ void loop() {
         }
 
         if(strcmp(packet.message, "turn_right")==0){
-            MotorR_Move(-75);
-            MotorL_Move(75);
+            MotorR_Move(-turn_speed);
+            MotorL_Move(turn_speed);
         }
 
         if(strcmp(packet.message, "turn_left")==0){
-            MotorR_Move(75);
-            MotorL_Move(-75);
+            MotorR_Move(turn_speed);
+            MotorL_Move(-turn_speed);
         }
 
         if(strcmp(packet.message, "go_back")==0){
             MotorR_Move(-speed);
             MotorL_Move(-speed);
         }
-
-        if(strcmp(packet.message, "pass_left")==0){
-            MotorR_Move(40);
-            MotorL_Move(75);
-        }
-
-        if(strcmp(packet.message, "pass_right")==0){
-            MotorR_Move(75);
-            MotorL_Move(40);
-        }
-
-
-
-
 
         newData = false;
     }

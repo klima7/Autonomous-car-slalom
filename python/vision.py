@@ -40,7 +40,6 @@ def image_processing():
     for detection in detections:
         x1, y1, x2, y2 = (int(detection.Left), int(detection.Top), int(
             detection.Right), int(detection.Bottom))
-        classID = detection.ClassID
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), thickness=3)
         labelX = int((x1+x2)/2)
         labelY = int((y1+y2)/2)
@@ -50,8 +49,10 @@ def image_processing():
     detectionsWithHeight = ((detection, detection.Top-detection.Bottom) for detection in detections)
     sortedDetections = sorted(detectionsWithHeight, key=lambda x: x[1])
     position = None
+    classID = None
     if sortedDetections:
         d = sortedDetections[0][0]
+        classID = d.ClassID
         labelX = int((d.Left+d.Right)/2)
         labelY = int((d.Bottom+d.Top)/2)-20
         position = labelX - (frameResolution[0] / 2)
@@ -63,7 +64,7 @@ def image_processing():
     if runHeadless is False:
         cv2.imshow("video", frame)
 
-    return position
+    return position, classID
 
 
 def dispose():
