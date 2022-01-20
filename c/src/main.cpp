@@ -7,6 +7,9 @@
 #include "variables.h"
 #include "functions.hpp"
 #include "ISAMobile.h"
+#include <Odometry.hpp>
+#include <sstream>
+#include <string>
 
 
 float YawCalibrationCenter = 90.0f;
@@ -29,11 +32,13 @@ float pitchRequested = 0;
 float yawErrorAccumulated = 0;
 float pitchErrorAccumulated = 0;
 
+Odometry odometry; 
 
 //============
 
 int speed = 50;
 float turn_speed = 75;
+float fast_turn_speed = 90;
 
 //==============SENSORS VARIABLES==============
 #define SONAR_NUM      3
@@ -90,7 +95,12 @@ void processPingResult(uint8_t sensor, int distanceInCm) {
   {
      isObstacle[sensor] = false;
   }
-  String packet = "<"+String(getDistance(0))+","+String(getDistance(1))+","+String(getDistance(2))+">";
+
+  float x, y, theta;
+  std::tie(x, y, theta) = odometry.GetPosition();
+
+  String angle_str = String(theta);
+  String packet = "<"+String(getDistance(0))+","+String(getDistance(1))+","+String(getDistance(2))+","+angle_str+">";
   Serial.write(packet.c_str());
 }
 
@@ -191,6 +201,7 @@ void setup() {
     initServos();
     centerServos();
     initSensors();
+    odometry.Initialize();
 
     // initESP826();
     // initLED();
@@ -275,9 +286,23 @@ void loop() {
             MotorL_Move(-turn_speed);
         }
 
+        if(strcmp(packet.message, "turn_right_faster")==0){
+            MotorR_Move(-fast_turn_speed);
+            MotorL_Move(fast_turn_speed);
+        }
+
+        if(strcmp(packet.message, "turn_left_faster")==0){
+            MotorR_Move(fast_turn_speed);
+            MotorL_Move(-fast_turn_speed);
+        }
+
         if(strcmp(packet.message, "go_back")==0){
             MotorR_Move(-speed);
             MotorL_Move(-speed);
+        }
+
+        if(strcmp(packet.message, "reset_angle")==0){
+            odometry.ResetPosition();
         }
 
         newData = false;

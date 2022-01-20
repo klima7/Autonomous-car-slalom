@@ -35,7 +35,7 @@ def image_processing():
 
     detections = net.Detect(img, width, height)
 
-    print("detected {:d} objects in image".format(len(detections)))
+    # print("detected {:d} objects in image".format(len(detections)))
 
     for detection in detections:
         x1, y1, x2, y2 = (int(detection.Left), int(detection.Top), int(
@@ -59,7 +59,7 @@ def image_processing():
         cv2.putText(frame, f'Nearest ({position})', (labelX, labelY),
             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
-    net.PrintProfilerTimes()
+    # net.PrintProfilerTimes()
 
     if runHeadless is False:
         cv2.imshow("video", frame)
