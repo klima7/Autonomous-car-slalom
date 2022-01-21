@@ -16,8 +16,8 @@ class Action(Enum):
 class Movement:
 
     lastDirection = Action.TURN_LEFT
-    AVOID_DISTANCE = 30 #50
-    AVOID_DISTANCE_DETECTED_MAX = 60 #60
+    AVOID_DISTANCE = 50
+    AVOID_DISTANCE_DETECTED_MAX = 60
     AVOID_DISTANCE_DETECTED_MIN = 30
     SIDE_SENSORS_DISTANCE_BIAS = 30
 
@@ -25,14 +25,12 @@ class Movement:
     THRESHOLD_MAX = 50
 
     # Passing constants
-    forward_time = 3 #2.75
+    forward_time = 2.75
     second_forward_time = 3
     stop_time = 0.2
     first_angle = 30
     second_angle = 60
-
-    #test
-    global_distance = AVOID_DISTANCE_DETECTED_MIN
+    third_angle = 20 
 
     def move(self, position, classID):
         action = self._get_action(position, classID)
@@ -88,15 +86,12 @@ class Movement:
 
 
     def _get_detected_action(self, position, classID):
-        global global_distance
         treshold = self.THRESHOLD_MAX
         max_dist = 80
         dist = get_distances()[1]
         division = (dist/max_dist)
         print("Distance: ", dist)
         treshold = treshold * division
-        print("Division: ", division)
-        print("Treshold: ", treshold)
 
         if position < -treshold:
             return Action.TURN_LEFT
@@ -108,7 +103,6 @@ class Movement:
             if distance > 80:
                 return self.lastDirection 
             if self.AVOID_DISTANCE_DETECTED_MIN < distance < self.AVOID_DISTANCE_DETECTED_MAX and distance != 0:
-                global_distance = distance
                 if classID == 1:
                     return Action.PASS_LEFT
                 else:
@@ -147,15 +141,13 @@ class Movement:
             return Action.GO_FORWARD
 
     def pass_right(self):
-        time_percent = (global_distance-self.AVOID_DISTANCE_DETECTED_MIN)/(self.AVOID_DISTANCE_DETECTED_MAX-self.AVOID_DISTANCE_DETECTED_MIN)
         stop()
         time.sleep(self.stop_time)
 
         self.turn_exact(self.first_angle)
 
         start()
-        print("Time percent: ", time_percent)
-        time.sleep(self.forward_time*time_percent)
+        time.sleep(self.forward_time)
 
         stop()
         time.sleep(self.stop_time)
@@ -163,23 +155,21 @@ class Movement:
         self.turn_exact(-self.second_angle)
 
         start()
-        time.sleep(self.second_forward_time*(2-time_percent))
+        time.sleep(self.second_forward_time)
 
         stop()
         time.sleep(self.stop_time)
 
-        self.turn_exact(self.first_angle)
+        self.turn_exact(self.third_angle)
 
     def pass_left(self):
-        time_percent = (global_distance-self.AVOID_DISTANCE_DETECTED_MIN)/(self.AVOID_DISTANCE_DETECTED_MAX-self.AVOID_DISTANCE_DETECTED_MIN)
         stop()
         time.sleep(self.stop_time)
 
         self.turn_exact(-self.first_angle)
 
         start()
-        print("Time percent: ", time_percent)
-        time.sleep(self.forward_time*time_percent)
+        time.sleep(self.forward_time)
 
         stop()
         time.sleep(self.stop_time)
@@ -187,12 +177,12 @@ class Movement:
         self.turn_exact(self.second_angle)
 
         start()
-        time.sleep(self.second_forward_time*(2-time_percent))
+        time.sleep(self.second_forward_time)
 
         stop()
         time.sleep(self.stop_time)
 
-        self.turn_exact(-self.first_angle)
+        self.turn_exact(-self.third_angle)
 
     def turn_exact(self, angle_degree):
         print("Turning")
@@ -205,19 +195,21 @@ class Movement:
         radians = math.radians(angle_degree)
         if radians < 0:
             radians = 2*math.pi + radians
-        
-        reset_angle()
 
         stop()
         time.sleep(0.5)
+        
+        reset_angle()
+        time.sleep(0.2)
+        print('Theta after reset:', get_theta())
 
         if(angle_degree < 0):
-            turn_left_faster()
+            turn_left()
             theta = get_theta()
             while(theta >= radians or theta == 0):
                 theta = get_theta()
         else:
-            turn_right_faster()
+            turn_right()
             theta = get_theta()
             print('Before theta:', theta, '/', radians)
             while(theta <= radians or theta > 2*math.pi-0.2):

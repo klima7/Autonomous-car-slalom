@@ -37,7 +37,7 @@ Odometry odometry;
 //============
 
 int speed = 50;
-float turn_speed = 75;
+float turn_speed = 80;
 float fast_turn_speed = 90;
 
 //==============SENSORS VARIABLES==============
