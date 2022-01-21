@@ -21,8 +21,8 @@ class Movement:
     AVOID_DISTANCE_DETECTED_MIN = 30
     SIDE_SENSORS_DISTANCE_BIAS = 30
 
-    THRESHOLD_MIN = 15
-    THRESHOLD_MAX = 50
+    THRESHOLD_MIN = 25
+    THRESHOLD_MAX = 70
 
     # Passing constants
     forward_time = 2.75
@@ -89,9 +89,10 @@ class Movement:
         treshold = self.THRESHOLD_MAX
         max_dist = 80
         dist = get_distances()[1]
-        division = (dist/max_dist)
+        division = ((self.THRESHOLD_MAX -dist)/(max_dist-self.THRESHOLD_MIN))
         print("Distance: ", dist)
         treshold = treshold * division
+        treshold = self.THRESHOLD_MIN if treshold < self.THRESHOLD_MIN else treshold
 
         if position < -treshold:
             return Action.TURN_LEFT
@@ -200,14 +201,17 @@ class Movement:
         time.sleep(0.5)
         
         reset_angle()
-        time.sleep(0.2)
+        time.sleep(0.3)
         print('Theta after reset:', get_theta())
 
         if(angle_degree < 0):
             turn_left()
             theta = get_theta()
+            print('Before theta:', theta, '/', radians)
             while(theta >= radians or theta == 0):
+                print('Turn theta:', theta, '/', radians)
                 theta = get_theta()
+                time.sleep(0.1)
         else:
             turn_right()
             theta = get_theta()
