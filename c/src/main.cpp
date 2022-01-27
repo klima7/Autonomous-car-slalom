@@ -332,7 +332,7 @@ void loop() {
                 // String packet = "<"+String(theta_delta)+">";
                 // Serial.write(packet.c_str());
 
-                if(theta_delta < 2*PI/3.5/4) {
+                if(theta_delta < 2*PI/3.8/4) {
                     break;
                 }
             }
