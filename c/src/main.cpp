@@ -10,6 +10,7 @@
 #include <Odometry.hpp>
 #include <sstream>
 #include <string>
+#include <unistd.h>
 
 
 float YawCalibrationCenter = 90.0f;
@@ -303,6 +304,43 @@ void loop() {
 
         if(strcmp(packet.message, "reset_angle")==0){
             odometry.ResetPosition();
+        }
+
+        if(strcmp(packet.message, "init")==0){
+            odometry.ResetPosition();
+
+            float x, y, prev_theta;
+            std::tie(x, y, prev_theta) = odometry.GetPosition();
+
+            for(int s=150; s>20; s-=5) {
+                turn_speed = s;
+                
+                MotorR_Move(-s);
+                MotorL_Move(s);
+
+                delay(250);
+
+                float theta;
+                std::tie(x, y, theta) = odometry.GetPosition();
+
+                float theta_delta = theta - prev_theta;
+                if(theta_delta < 0) {
+                    theta_delta += 2*PI;
+                }
+                prev_theta += theta_delta;
+
+                // String packet = "<"+String(theta_delta)+">";
+                // Serial.write(packet.c_str());
+
+                if(theta_delta < 2*PI/3.5/4) {
+                    break;
+                }
+            }
+
+            delay(2000);
+
+            MotorR_Move(0);
+            MotorL_Move(0);
         }
 
         newData = false;

@@ -2,6 +2,7 @@ from enum import Enum
 from control import *
 import time
 import math
+import random
 
 class Action(Enum):
     TURN_LEFT = "turn_left"
@@ -11,15 +12,17 @@ class Action(Enum):
     STOP = "stop"
     PASS_LEFT ="pass_left"
     PASS_RIGHT="pass_right"
+    AVOID_LEFT="avoid_left"
+    AVOID_RIGHT="avoid_right"
 
 
 class Movement:
 
     lastDirection = Action.TURN_LEFT
-    AVOID_DISTANCE = 50
+    AVOID_DISTANCE = 30
+    SIDE_SENSORS_DISTANCE_BIAS = 20
     AVOID_DISTANCE_DETECTED_MAX = 60
     AVOID_DISTANCE_DETECTED_MIN = 30
-    SIDE_SENSORS_DISTANCE_BIAS = 30
 
     THRESHOLD_MIN = 25
     THRESHOLD_MAX = 70
@@ -59,6 +62,32 @@ class Movement:
                 stop()
                 time.sleep(0.2)
             turn_right()
+
+        # Avoid Left
+        elif action == Action.AVOID_LEFT:
+            if self.lastDirection == Action.TURN_RIGHT or self.lastDirection == Action.GO_FORWARD:
+                stop()
+                time.sleep(0.2)
+                go_back()
+                time.sleep(0.4)
+                stop()
+                time.sleep(0.2)
+            turn_left()
+            sleep_time = random.uniform(0.9, 1.8)
+            time.sleep(sleep_time)
+
+        # Avoid Right
+        elif action == Action.AVOID_RIGHT:
+            if self.lastDirection == Action.TURN_LEFT or self.lastDirection == Action.GO_FORWARD:
+                stop()
+                time.sleep(0.2)
+                go_back()
+                time.sleep(0.4)
+                stop()
+                time.sleep(0.2)
+            turn_right()
+            sleep_time = random.uniform(0.9, 1.8)
+            time.sleep(sleep_time)
 
         # Back
         elif action == Action.GO_BACK:
@@ -122,22 +151,22 @@ class Movement:
         if c != 0:
             if r != 0 and l != 0:
                 if l < r:
-                    return Action.TURN_RIGHT
+                    return Action.AVOID_RIGHT
                 elif r < l:
-                    return Action.TURN_LEFT
+                    return Action.AVOID_LEFT
                 else:
                     return Action.STOP
             elif r != 0 or l != 0:
                 if r == 0:
-                    return Action.TURN_RIGHT
+                    return Action.AVOID_RIGHT
                 elif l == 0:
-                    return Action.TURN_LEFT
+                    return Action.AVOID_LEFT
             else:
                 return self.lastDirection
         elif r != 0:
-            return Action.TURN_LEFT
+            return Action.AVOID_LEFT
         elif l != 0:
-            return Action.TURN_RIGHT
+            return Action.AVOID_RIGHT
         else:
             return Action.GO_FORWARD
 
