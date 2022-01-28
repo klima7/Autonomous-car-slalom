@@ -287,14 +287,14 @@ void loop() {
             MotorL_Move(-turn_speed);
         }
 
-        if(strcmp(packet.message, "turn_right_faster")==0){
-            MotorR_Move(-fast_turn_speed);
-            MotorL_Move(fast_turn_speed);
+        if(strcmp(packet.message, "turn_right_slower")==0){
+            MotorR_Move(-(turn_speed-5));
+            MotorL_Move((turn_speed-5));
         }
 
-        if(strcmp(packet.message, "turn_left_faster")==0){
-            MotorR_Move(fast_turn_speed);
-            MotorL_Move(-fast_turn_speed);
+        if(strcmp(packet.message, "turn_left_slower")==0){
+            MotorR_Move((turn_speed-5));
+            MotorL_Move(-(turn_speed-5));
         }
 
         if(strcmp(packet.message, "go_back")==0){

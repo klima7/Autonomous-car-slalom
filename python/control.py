@@ -27,13 +27,13 @@ def turn_left():
     packetBytes = bytes(packet, 'utf-8')
     ser.write(packetBytes)
 
-def turn_right_faster():
-    packet = '<turn_right_faster, 0, 0>'
+def turn_right_slower():
+    packet = '<turn_right_slower, 0, 0>'
     packetBytes = bytes(packet, 'utf-8')
     ser.write(packetBytes)
 
-def turn_left_faster():
-    packet = '<turn_left_faster, 0, 0>'
+def turn_left_slower():
+    packet = '<turn_left_slower, 0, 0>'
     packetBytes = bytes(packet, 'utf-8')
     ser.write(packetBytes)
 

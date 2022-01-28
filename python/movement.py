@@ -24,8 +24,8 @@ class Movement:
     AVOID_DISTANCE_DETECTED_MAX = 60
     AVOID_DISTANCE_DETECTED_MIN = 30
 
-    THRESHOLD_MIN = 25
-    THRESHOLD_MAX = 70
+    THRESHOLD_MIN = 60
+    THRESHOLD_MAX = 90
 
     # Passing constants
     forward_time = 2.75
@@ -54,14 +54,20 @@ class Movement:
             if self.lastDirection == Action.TURN_RIGHT or self.lastDirection == Action.GO_FORWARD:
                 stop()
                 time.sleep(0.2)
-            turn_left()
+            turn_left_slower()
+            time.sleep(0.1)
+            stop()
+            time.sleep(0.3)
 
         # Right
         elif action == Action.TURN_RIGHT:
             if self.lastDirection == Action.TURN_LEFT or self.lastDirection == Action.GO_FORWARD:
                 stop()
                 time.sleep(0.2)
-            turn_right()
+            turn_right_slower()
+            time.sleep(0.1)
+            stop()
+            time.sleep(0.3)
 
         # Avoid Left
         elif action == Action.AVOID_LEFT:
@@ -230,7 +236,7 @@ class Movement:
         time.sleep(0.5)
         
         reset_angle()
-        time.sleep(0.3)
+        time.sleep(1)
         print('Theta after reset:', get_theta())
 
         if(angle_degree < 0):
@@ -245,7 +251,7 @@ class Movement:
             turn_right()
             theta = get_theta()
             print('Before theta:', theta, '/', radians)
-            while(theta <= radians or theta > 2*math.pi-0.2):
+            while(theta <= radians or theta > 2*math.pi-0.4):
                 print('Turn theta:', theta, '/', radians)
                 theta = get_theta()
                 time.sleep(0.1)
